@@ -204,8 +204,18 @@ L.GeometryUtil = L.extend(L.GeometryUtil || {}, {
         if (! ( layer instanceof L.Polyline ) )
             return result;
 
-        // deep copy of latlngs
-        latlngs = JSON.parse(JSON.stringify(layer.getLatLngs().slice(0)));
+        function deepClone(arr) {
+          var len = arr.length;
+          var newArr = new Array(len);
+          for (var i=0; i<len; i++) {
+          if ((Array.isArray(arr[i]))&&(!(arr[i] instanceof L.LatLng))) 
+            newArr[i] = deepClone(arr[i]);
+          else 
+            newArr[i] = arr[i].clone();
+          }
+          return newArr;
+        }       
+        latlngs = deepClone(layer.getLatLngs().slice(0));
 
         // add the last segment for L.Polygon
         if (layer instanceof L.Polygon) {
